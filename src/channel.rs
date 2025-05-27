@@ -2,9 +2,9 @@ use libc::{c_char, c_int, c_uchar, c_uint, c_ulong, c_void, size_t};
 use parking_lot::{Mutex, MutexGuard};
 use std::cmp;
 use std::ffi::CString;
-use std::ptr::{null, null_mut};
 use std::io;
 use std::io::prelude::*;
+use std::ptr::{null, null_mut};
 use std::slice;
 use std::sync::Arc;
 
@@ -22,8 +22,8 @@ struct ChannelInner {
 unsafe impl Send for ChannelInner {}
 unsafe impl Sync for ChannelInner {}
 
-struct LockedChannel<'a> {
-    raw: *mut raw::LIBSSH2_CHANNEL,
+pub struct LockedChannel<'a> {
+    pub raw: *mut raw::LIBSSH2_CHANNEL,
     sess: MutexGuard<'a, SessionInner>,
 }
 
@@ -65,7 +65,7 @@ impl Channel {
         }
     }
 
-    fn lock(&self) -> LockedChannel {
+    pub fn lock(&self) -> LockedChannel {
         let sess = self.channel_inner.sess.lock();
         LockedChannel {
             sess,
@@ -88,11 +88,11 @@ pub struct Stream {
     id: i32,
 }
 
-struct LockedStream<'a> {
-    raw: *mut raw::LIBSSH2_CHANNEL,
-    sess: MutexGuard<'a, SessionInner>,
-    id: i32,
-    read_limit: MutexGuard<'a, Option<u64>>,
+pub struct LockedStream<'a> {
+    pub raw: *mut raw::LIBSSH2_CHANNEL,
+    pub sess: MutexGuard<'a, SessionInner>,
+    pub id: i32,
+    pub read_limit: MutexGuard<'a, Option<u64>>,
 }
 
 impl<'a> LockedStream<'a> {
@@ -519,7 +519,7 @@ impl Drop for ChannelInner {
 }
 
 impl Stream {
-    fn lock(&self) -> LockedStream {
+    pub fn lock(&self) -> LockedStream {
         let sess = self.channel_inner.sess.lock();
         LockedStream {
             sess,

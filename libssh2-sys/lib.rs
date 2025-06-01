@@ -198,15 +198,15 @@ pub const LIBSSH2_CHANNEL_EXTENDED_DATA_MERGE: c_int = 2;
 pub const LIBSSH2_SESSION_BLOCK_INBOUND: c_int = 1;
 pub const LIBSSH2_SESSION_BLOCK_OUTBOUND: c_int = 2;
 
-pub const  LIBSSH2_TRACE_TRANS : c_int = 1<<1;
-pub const  LIBSSH2_TRACE_KEX   : c_int = 1<<2;
-pub const  LIBSSH2_TRACE_AUTH  : c_int = 1<<3;
-pub const  LIBSSH2_TRACE_CONN  : c_int = 1<<4;
-pub const  LIBSSH2_TRACE_SCP   : c_int = 1<<5;
-pub const  LIBSSH2_TRACE_SFTP  : c_int = 1<<6;
-pub const  LIBSSH2_TRACE_ERROR : c_int = 1<<7;
-pub const  LIBSSH2_TRACE_PUBLICKEY : c_int = 1<<8;
-pub const  LIBSSH2_TRACE_SOCKET : c_int = 1<<9;
+pub const LIBSSH2_TRACE_TRANS: c_int = 1 << 1;
+pub const LIBSSH2_TRACE_KEX: c_int = 1 << 2;
+pub const LIBSSH2_TRACE_AUTH: c_int = 1 << 3;
+pub const LIBSSH2_TRACE_CONN: c_int = 1 << 4;
+pub const LIBSSH2_TRACE_SCP: c_int = 1 << 5;
+pub const LIBSSH2_TRACE_SFTP: c_int = 1 << 6;
+pub const LIBSSH2_TRACE_ERROR: c_int = 1 << 7;
+pub const LIBSSH2_TRACE_PUBLICKEY: c_int = 1 << 8;
+pub const LIBSSH2_TRACE_SOCKET: c_int = 1 << 9;
 pub enum LIBSSH2_SESSION {}
 pub enum LIBSSH2_AGENT {}
 pub enum LIBSSH2_CHANNEL {}
@@ -291,7 +291,12 @@ pub type LIBSSH2_PASSWD_CHANGEREQ_FUNC = extern "C" fn(
     newpw_len: *mut c_int,
     abstrakt: *mut *mut c_void,
 );
-
+pub type LIBSSH2_TRACE_HANDLER_FUNC = extern "C" fn(
+    sess: *mut LIBSSH2_SESSION,
+    context: *mut c_void,
+    data: *const c_char,
+    length: size_t,
+);
 pub type LIBSSH2_USERAUTH_KBDINT_RESPONSE_FUNC = extern "C" fn(
     username: *const c_char,
     username_len: c_int,
@@ -330,6 +335,11 @@ extern "C" {
     pub fn libssh2_free(sess: *mut LIBSSH2_SESSION, ptr: *mut c_void);
     pub fn libssh2_hostkey_hash(session: *mut LIBSSH2_SESSION, hash_type: c_int) -> *const c_char;
     pub fn libssh2_trace(session: *mut LIBSSH2_SESSION, bitmask: c_int) -> c_int;
+    pub fn libssh2_trace_sethandler(
+        session: *mut LIBSSH2_SESSION,
+        context: *mut c_void,
+        callback: Option<LIBSSH2_TRACE_HANDLER_FUNC>,
+    ) -> c_int;
 
     // session
     pub fn libssh2_session_init_ex(

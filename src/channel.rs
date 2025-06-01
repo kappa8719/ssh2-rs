@@ -65,6 +65,7 @@ impl Channel {
         }
     }
 
+    /// Lock the channel and return the handle
     pub fn lock(&self) -> LockedChannel {
         let sess = self.channel_inner.sess.lock();
         LockedChannel {
@@ -519,6 +520,7 @@ impl Drop for ChannelInner {
 }
 
 impl Stream {
+    /// Lock the session and return the handle of stream
     pub fn lock(&self) -> LockedStream {
         let sess = self.channel_inner.sess.lock();
         LockedStream {
